@@ -7,12 +7,12 @@ function App() {
     <AverageInfoCard
       isBest
       average={100003}
-      times={[100001, 100002, 100003, 100004, 100005]}
+      times={[100, 10, 6100, 61000, 99999]}
     ></AverageInfoCard>
     <AverageInfoCard
       isWorst
-      average={100003}
-      times={[100001, 100002, 100003, 100004, 100005]}
+      average={Infinity}
+      times={[Infinity, -Infinity, 100003, 100004, 100005]}
     ></AverageInfoCard>
     </div>
   );

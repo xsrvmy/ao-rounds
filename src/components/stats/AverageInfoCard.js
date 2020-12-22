@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Card } from "react-bootstrap";
+import { centiToDisplayTime } from "../../timeUtils";
 
 export default class AverageInfoCard extends React.Component {
   render() {
@@ -23,7 +24,7 @@ export default class AverageInfoCard extends React.Component {
                 isBest ? "text-success" : isWorst ? "text-danger" : undefined
               }
             >
-              {isNaN(average) ? "Incomplete" : average / 100}
+              {isNaN(average) ? "Incomplete" : centiToDisplayTime(average)}
             </a>
           </Card.Title>
           {times.map((time, i) => {
@@ -39,7 +40,7 @@ export default class AverageInfoCard extends React.Component {
                 variant="link"
                 size="sm"
               >
-                {time / 100}
+                {centiToDisplayTime(time)}
               </Button>
             );
           })}
