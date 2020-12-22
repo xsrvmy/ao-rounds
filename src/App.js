@@ -8,6 +8,7 @@ function App() {
       isBest
       average={100003}
       times={[100, 10, 6100, 61000, 99999]}
+      isTrimmed
     ></AverageInfoCard>
     <AverageInfoCard
       isWorst

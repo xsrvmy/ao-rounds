@@ -4,7 +4,7 @@ import { centiToDisplayTime } from "../../timeUtils";
 
 export default class AverageInfoCard extends React.Component {
   render() {
-    const { isBest, isWorst, average, times } = this.props;
+    const { isBest, isWorst, average, times, isTrimmed } = this.props;
     let minIndex = 0;
     let maxIndex = 0;
     times.forEach((time, i) => {
@@ -40,7 +40,9 @@ export default class AverageInfoCard extends React.Component {
                 variant="link"
                 size="sm"
               >
-                {centiToDisplayTime(time)}
+                {isTrimmed && (i === maxIndex || i === minIndex)
+                  ? `(${centiToDisplayTime(time)})`
+                  : centiToDisplayTime(time)}
               </Button>
             );
           })}
