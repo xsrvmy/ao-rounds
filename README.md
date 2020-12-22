@@ -24,7 +24,7 @@ which means the standard scripts are used:
 All files licensed under MIT, either by me or by Facebook
 (due to `create-react-app` template).
 
-Files in the initial commit,
+Files in the initial commit (a32fa74f),
 other than the `README.md`, `LICENSE`, `LICENSE-CRA` and `package-lock.json`,
 are licensed according to `LICENSE-CRA`.
 Note that I have deleted some files from the template so it might not build.
