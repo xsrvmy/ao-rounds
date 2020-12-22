@@ -1,0 +1,50 @@
+import React from "react";
+import { Button, Card } from "react-bootstrap";
+
+export default class AverageInfoCard extends React.Component {
+  render() {
+    const { isBest, isWorst, average, times } = this.props;
+    let minIndex = 0;
+    let maxIndex = 0;
+    times.forEach((time, i) => {
+      console.log(typeof i);
+      if (time > times[maxIndex]) maxIndex = i;
+      if (time < times[minIndex]) minIndex = i;
+    });
+    if (minIndex === maxIndex) maxIndex = 1;
+
+    return (
+      <Card>
+        <Card.Body>
+          <Card.Title>
+            <a
+              href="#123"
+              className={
+                isBest ? "text-success" : isWorst ? "text-danger" : undefined
+              }
+            >
+              {isNaN(average) ? "Incomplete" : average / 100}
+            </a>
+          </Card.Title>
+          {times.map((time, i) => {
+            return (
+              <Button
+                className={
+                  i === maxIndex
+                    ? "text-success"
+                    : i === minIndex
+                    ? "text-danger"
+                    : undefined
+                }
+                variant="link"
+                size="sm"
+              >
+                {time / 100}
+              </Button>
+            );
+          })}
+        </Card.Body>
+      </Card>
+    );
+  }
+}
