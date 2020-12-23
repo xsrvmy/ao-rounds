@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { centiToDisplayTime } from "../../timeUtils";
+import { addTimeAction } from "../../actions/timeActions";
+import { useDispatch, useSelector } from "react-redux";
+import { nextScrambleAction } from "../../actions/scramblesActions";
 
 export default function TimeInput() {
 
   const [timeText, setTimeText] = useState("");
   const [isTimeInvalid, setTimeInvalid] = useState(false);
+  const currentScramble = useSelector((state) => state.scrambles.queue[0]);
+  const dispatch = useDispatch();
 
   const getTimeValue = () => {
     if (timeText.match(/^[0-9]+$/)) {
@@ -37,7 +41,8 @@ export default function TimeInput() {
 
   // TODO: hook this up to redux
   const submitTime = (centi) => {
-    alert(centiToDisplayTime(centi));
+    dispatch(addTimeAction(centi, currentScramble || ""));
+    dispatch(nextScrambleAction());
     setTimeText("");
     setTimeInvalid(false);
   };

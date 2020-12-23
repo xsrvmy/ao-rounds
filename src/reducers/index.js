@@ -1,4 +1,8 @@
 import { combineReducers } from "redux";
 import scrambleReducer from "./scramblesReducer";
-const reducer = combineReducers({ scrambles: scrambleReducer });
+import sessionReducer from "./sessionReducer";
+const reducer = combineReducers({
+  scrambles: scrambleReducer,
+  session: sessionReducer,
+});
 export default reducer;

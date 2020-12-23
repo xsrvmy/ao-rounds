@@ -17,12 +17,15 @@ export default function scrambleReducer(scrambles = defaultScrambles, action) {
         queue: [...scrambles.queue, ...action.scrambles],
       };
     case NEXT_SCRAMBLE:
-      const [head, ...tail] = scrambles.queue;
-      return {
-        ...scrambles,
-        queue: tail,
-        previous: head,
-      };
+      if (scrambles.queue.length > 0) {
+        const [head, ...tail] = scrambles.queue;
+        return {
+          ...scrambles,
+          queue: tail,
+          previous: head,
+        };
+      }
+      return scrambles;
     case PREVIOUS_SCRAMBLE:
       return {
         ...scrambles,
