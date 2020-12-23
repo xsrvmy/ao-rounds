@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { centiToDisplayTime } from "../../timeUtils";
 
-export default class TimeInput extends React.Component {
-  state = { text: "", error: false };
+export default function TimeInput() {
 
-  getTimeValue = () => {
-    if (this.state.text.match(/^[0-9]+$/)) {
-      const value = parseInt(this.state.text, 10);
+  const [timeText, setTimeText] = useState("");
+  const [isTimeInvalid, setTimeInvalid] = useState(false);
+
+  const getTimeValue = () => {
+    if (timeText.match(/^[0-9]+$/)) {
+      const value = parseInt(timeText, 10);
       const centiseconds = value % 10000;
       const minutes = Math.floor(value / 10000);
       if (centiseconds === 0 && minutes === 0) return undefined;
@@ -14,15 +16,15 @@ export default class TimeInput extends React.Component {
     }
     // xx.xx
     if (
-      this.state.text.match(/^[0-9]*\.[0-9]*$/) &&
-      this.state.text.length > 1
+      timeText.match(/^[0-9]*\.[0-9]*$/) &&
+      timeText.length > 1
     ) {
-      const output = Math.floor(parseFloat(this.state.text) * 100);
+      const output = Math.floor(parseFloat(timeText) * 100);
       if (output === 0) return undefined;
       return output;
     }
     // xx:xx
-    const matchResults = this.state.text.match(/^([0-9]*):([0-9]*\.?[0-9]*)$/);
+    const matchResults = timeText.match(/^([0-9]*):([0-9]*\.?[0-9]*)$/);
     console.log(matchResults);
     if (matchResults) {
       const minutes = parseInt(matchResults[1] || "0", 10);
@@ -34,42 +36,40 @@ export default class TimeInput extends React.Component {
   };
 
   // TODO: hook this up to redux
-  submitTime = (centi) => {
+  const submitTime = (centi) => {
     alert(centiToDisplayTime(centi));
-    this.setState({ error: false, text: "" });
+    setTimeText("");
+    setTimeInvalid(false);
   };
 
-  onChange = (e) => {
-    console.log("onChange");
-    this.setState({ text: e.target.value });
+  const onChange = (e) => {
+    setTimeText(e.target.value);
   };
 
   /**
    * @param {React.KeyboardEvent<>} e
    */
-  onKeyDown = (e) => {
+  const onKeyDown = (e) => {
     if (e.key === "Enter") {
       // validation
-      const value = this.getTimeValue();
+      const value = getTimeValue();
       if (value) {
-        this.submitTime(value);
+        submitTime(value);
       } else {
-        this.setState({ error: true });
+        setTimeInvalid(true);
       }
     }
   };
 
-  render() {
-    return (
-      <input
-        type="text"
-        className={`form-control form-control-lg ${
-          this.state.error ? "is-invalid" : ""
-        }`}
-        value={this.state.text}
-        onChange={this.onChange}
-        onKeyDown={this.onKeyDown}
-      />
-    );
-  }
+  return (
+    <input
+      type="text"
+      className={`form-control form-control-lg ${
+        isTimeInvalid ? "is-invalid" : ""
+      }`}
+      value={timeText}
+      onChange={onChange}
+      onKeyDown={onKeyDown}
+    />
+  );
 }
