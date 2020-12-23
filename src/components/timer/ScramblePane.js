@@ -1,27 +1,40 @@
 import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loadScramblesAction,
+  nextScrambleAction,
+  previousScrambleAction,
+} from "../../actions/scramblesActions";
 
 export default function ScramblePane(props) {
   const [isLoadModalShown, setLoadModalShown] = useState(false);
   const [scrambleInput, setScrambleInput] = useState("");
+
+  const currentScramble = useSelector((state) => state.scrambles.queue[0]);
+  const previousScramble = useSelector((state) => state.scrambles.previous);
+  const dispatch = useDispatch();
 
   const onLoadClick = () => {
     setLoadModalShown(true);
     setScrambleInput("");
   };
 
-  const loadScrambles = () => {
-    console.log(scrambleInput);
+  const onModalLoadClick = () => {
+    dispatch(loadScramblesAction(scrambleInput.split("\n").filter((x) => x !== "")));
     setLoadModalShown(false);
   };
 
-  const { scramble } = props;
+  const onNextClick = () => dispatch(nextScrambleAction());
+
+  const onPreviousClick = () => dispatch(previousScrambleAction());
+
   return (
     <>
       <Card className="h-100">
         <Card.Body>
           <div className="text-monospace" style={{ fontSize: "14pt" }}>
-            {scramble}
+            {currentScramble || "Please load scrambles"}
           </div>
           <div className="text-right">
             <Button
@@ -36,11 +49,17 @@ export default function ScramblePane(props) {
               variant="outline-primary"
               size="sm"
               className="mr-2"
-              disabled
+              onClick={onPreviousClick}
+              disabled={!previousScramble}
             >
               Previous
             </Button>
-            <Button variant="outline-primary" size="sm">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={onNextClick}
+              disabled={!currentScramble}
+            >
               Next
             </Button>
           </div>
@@ -57,7 +76,7 @@ export default function ScramblePane(props) {
           ></textarea>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={loadScrambles}>Load</Button>
+          <Button onClick={onModalLoadClick}>Load</Button>
         </Modal.Footer>
       </Modal>
     </>
