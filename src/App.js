@@ -19,7 +19,7 @@ function App() {
             <AverageInfoCard
               isWorst
               average={Infinity}
-              times={[Infinity, -Infinity, 100003, 100004, 100005]}
+              times={[-Infinity, -Infinity, -Infinity, -Infinity, -Infinity]}
             />
           </div>
         </Col>

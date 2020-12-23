@@ -7,8 +7,16 @@ export default function AverageInfoCard(props) {
   let minIndex = 0;
   let maxIndex = 0;
   times.forEach((time, i) => {
-    if (time > times[maxIndex]) maxIndex = i;
-    if (time < times[minIndex]) minIndex = i;
+    if (
+      times[maxIndex] !== -Infinity &&
+      (time > times[maxIndex] || time === -Infinity)
+    )
+      maxIndex = i;
+    if (
+      time !== -Infinity &&
+      (time < times[minIndex] || times[minIndex] === -Infinity)
+    )
+      minIndex = i;
   });
   if (minIndex === maxIndex) maxIndex = 1;
 
@@ -31,9 +39,9 @@ export default function AverageInfoCard(props) {
               key={i}
               className={
                 i === maxIndex
-                  ? "text-success"
-                  : i === minIndex
                   ? "text-danger"
+                  : i === minIndex
+                  ? "text-success"
                   : undefined
               }
               variant="link"
