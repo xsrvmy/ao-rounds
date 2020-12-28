@@ -3,24 +3,24 @@ import { ADD_TIME } from "../actions/actionTypes";
 const defaultSession = {
   name: "default",
   event: "3x3",
+  format: "ao5",
   rounds: [],
 };
 
 const defaultRound = {
-  format: "ao5",
   average: NaN,
   solves: [],
 };
 
-function isRoundComplete(round) {
-  if (round.format === "ao5") return round.solves.length === 5;
+function isRoundComplete(round, format) {
+  if (format === "ao5") return round.solves.length === 5;
   return round.solves.length === 3;
 }
 
-function calculateRoundAverage(round) {
-  if (!isRoundComplete(round)) return NaN;
+function calculateRoundAverage(round, format) {
+  if (!isRoundComplete(round, format)) return NaN;
   const times = round.solves.map((x) => Math.abs(x.time));
-  switch (round.format) {
+  switch (format) {
     case "ao5":
       const filtered = times.filter((x) => x !== Infinity);
       if (filtered.length < 4) return Infinity;
@@ -52,9 +52,9 @@ function calculateRoundAverage(round) {
   }
 }
 
-function addTimeToRounds(rounds, time, scramble) {
+function addTimeToRounds(rounds, time, scramble, format) {
   // if an average is complete
-  if (rounds.length === 0 || isRoundComplete(rounds[rounds.length - 1])) {
+  if (rounds.length === 0 || isRoundComplete(rounds[rounds.length - 1], format)) {
     const newRound = { ...defaultRound, solves: [{ time, scramble }] };
     return [...rounds, newRound];
   } else {
@@ -65,7 +65,7 @@ function addTimeToRounds(rounds, time, scramble) {
     };
     return [
       ...(rounds.slice(0, rounds.length - 1)),
-      { ...newLastRound, average: calculateRoundAverage(newLastRound) },
+      { ...newLastRound, average: calculateRoundAverage(newLastRound, format) },
     ];
   }
 }
@@ -76,7 +76,8 @@ export default function sessionReducer(session = defaultSession, action) {
       const rounds = addTimeToRounds(
         session.rounds,
         action.time,
-        action.scramble
+        action.scramble,
+        session.format,
       );
       return { ...session, rounds };
     default:
