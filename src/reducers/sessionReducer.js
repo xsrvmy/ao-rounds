@@ -5,6 +5,14 @@ const defaultSession = {
   event: "3x3",
   format: "ao5",
   rounds: [],
+  roundStats: {
+    ao5: NaN,
+    mo5: NaN,
+    ao10: NaN,
+    mo10: NaN,
+    ao20: NaN,
+    mo20: NaN,
+  },
 };
 
 const defaultRound = {
@@ -52,9 +60,53 @@ function calculateRoundAverage(round, format) {
   }
 }
 
+function calculateRoundStats(rounds, roundStats) {
+  const results = rounds.map((round) => round.average);
+  const stats = {};
+  for (const key in roundStats) {
+    if (key.startsWith("ao")) {
+      stats[key] = getAORounds(results, parseInt(key.substring(2)));
+    } else if (key.startsWith("mo")) {
+      stats[key] = getMORounds(results, parseInt(key.substring(2)));
+    }
+    // TODO: deal with no dnf
+  }
+  return stats;
+}
+
+function getAORounds(results, count) {
+  if (results.length < count) return NaN;
+  const times = results.slice(results.length - count, results.length);
+  let sum = 0;
+  let dnfCount = 0;
+  times.forEach((x) => {
+    if (x < Infinity) sum += x;
+    else ++dnfCount;
+  });
+  if (dnfCount > 1) return Infinity;
+  if (dnfCount === 1)
+    return Math.round((sum - Math.min(...times)) / (count - 2));
+  return Math.round(
+    (sum - Math.min(...times) - Math.max(...times)) / (count - 2)
+  );
+}
+
+function getMORounds(results, count) {
+  if (results.length < count) return NaN;
+  const times = results.slice(results.length - count, results.length);
+  let sum = 0;
+  times.forEach((x) => {
+    sum += x;
+  });
+  return Math.round(sum / count);
+}
+
 function addTimeToRounds(rounds, time, scramble, format) {
   // if an average is complete
-  if (rounds.length === 0 || isRoundComplete(rounds[rounds.length - 1], format)) {
+  if (
+    rounds.length === 0 ||
+    isRoundComplete(rounds[rounds.length - 1], format)
+  ) {
     const newRound = { ...defaultRound, solves: [{ time, scramble }] };
     return [...rounds, newRound];
   } else {
@@ -64,7 +116,7 @@ function addTimeToRounds(rounds, time, scramble, format) {
       solves: [...lastRound.solves, { time, scramble }],
     };
     return [
-      ...(rounds.slice(0, rounds.length - 1)),
+      ...rounds.slice(0, rounds.length - 1),
       { ...newLastRound, average: calculateRoundAverage(newLastRound, format) },
     ];
   }
@@ -77,8 +129,15 @@ export default function sessionReducer(session = defaultSession, action) {
         session.rounds,
         action.time,
         action.scramble,
-        session.format,
+        session.format
       );
+      if (isRoundComplete(rounds[rounds.length - 1], session.format)) {
+        return {
+          ...session,
+          rounds,
+          roundStats: calculateRoundStats(rounds, session.roundStats),
+        };
+      }
       return { ...session, rounds };
     default:
       return session;
